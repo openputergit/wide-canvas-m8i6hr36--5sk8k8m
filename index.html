@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganpat University Bus Transportation System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .profile-upload:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Loading Animation -->
+    <div class="loading">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="flex flex-col items-center justify-center min-h-screen">
+        <img src="https://www.ganpatuniversity.ac.in/images/logo.png" alt="Ganpat University Logo" class="w-64 mb-8">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Enrollment Number</label>
+                    <input type="text" id="enrollmentNumber" class="mt-1 block w-full rounded-md border border-gray-300 p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full rounded-md border border-gray-300 p-2">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="hidden">
+        <nav class="bg-blue-600 p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <img src="https://www.ganpatuniversity.ac.in/images/logo.png" alt="Ganpat University Logo" class="h-12">
+                <div class="flex items-center space-x-4">
+                    <div id="profileContainer" class="relative">
+                        <label class="profile-upload">
+                            <img id="profilePic" src="https://via.placeholder.com/40" alt="Profile" class="w-10 h-10 rounded-full">
+                            <input type="file" id="profileInput" class="hidden" accept="image/*">
+                        </label>
+                    </div>
+                    <button onclick="logout()" class="text-white">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto p-4">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Student Details</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Name:</span>
+                                <input type="text" id="studentName" class="border rounded p-1" disabled>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Enrollment Number:</span>
+                                <input type="text" id="studentEnrollment" class="border rounded p-1" disabled>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Birth Date:</span>
+                                <input type="date" id="studentBirthDate" class="border rounded p-1" disabled>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Department:</span>
+                                <input type="text" id="studentDepartment" class="border rounded p-1" disabled>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Course:</span>
+                                <input type="text" id="studentCourse" class="border rounded p-1" disabled>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Semester:</span>
+                                <input type="text" id="studentSemester" class="border rounded p-1" disabled>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-40 font-medium">Class:</span>
+                                <input type="text" id="studentClass" class="border rounded p-1" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Bus Details</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="busPassBtn" class="bg-blue-600 text-white p-2 rounded">Bus Pass</button>
+                            <button id="busFeeBtn" class="bg-blue-600 text-white p-2 rounded">Bus Fee Receipt</button>
+                        </div>
+                        
+                        <div id="documentSection" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <!-- Document uploads will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAdmin = false;
+        const adminPassword = 'guni@_1212';
+
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const enrollment = document.getElementById('enrollmentNumber').value;
+            const password = document.getElementById('password').value;
+
+            if (password === adminPassword) {
+                isAdmin = true;
+                showDashboard(true);
+            } else {
+                // Here you would verify the student's birthday date
+                // For demo purposes, we'll just show the dashboard
+                isAdmin = false;
+                showDashboard(false);
+            }
+        });
+
+        function showDashboard(isAdmin) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+
+            const inputs = document.querySelectorAll('input[type="text"], input[type="date"]');
+            inputs.forEach(input => {
+                input.disabled = !isAdmin;
+            });
+
+            if (isAdmin) {
+                setupDocumentUpload();
+            }
+        }
+
+        function setupDocumentUpload() {
+            const documentSection = document.getElementById('documentSection');
+            for (let i = 0; i < 6; i++) {
+                const uploadDiv = document.createElement('div');
+                uploadDiv.className = 'flex flex-col items-center';
+                
+                const uploadLabel = document.createElement('label');
+                uploadLabel.className = 'cursor-pointer';
+                
+                const uploadInput = document.createElement('input');
+                uploadInput.type = 'file';
+                uploadInput.className = 'hidden';
+                uploadInput.accept = 'image/*';
+                
+                const uploadPreview = document.createElement('div');
+                uploadPreview.className = 'w-32 h-32 bg-gray-200 rounded flex items-center justify-center';
+                uploadPreview.innerHTML = '<i class="bi bi-plus-lg text-4xl"></i>';
+                
+                const caption = document.createElement('input');
+                caption.type = 'text';
+                caption.placeholder = 'Add caption';
+                caption.className = 'mt-2 w-full border rounded p-1';
+                
+                uploadLabel.appendChild(uploadInput);
+                uploadLabel.appendChild(uploadPreview);
+                uploadDiv.appendChild(uploadLabel);
+                uploadDiv.appendChild(caption);
+                documentSection.appendChild(uploadDiv);
+
+                uploadInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            uploadPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded">`;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        }
+
+        // Profile Picture Upload
+        document.getElementById('profileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePic').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function logout() {
+            location.reload();
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
